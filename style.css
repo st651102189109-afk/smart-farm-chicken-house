@@ -1,14 +1,14 @@
 body {
+  margin: 0;
   font-family: Arial;
   background: #0f172a;
   color: white;
-  margin: 0;
-  padding: 10px;
 }
 
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: auto;
+  padding: 10px;
 }
 
 .card {
@@ -18,19 +18,22 @@ body {
   border-radius: 15px;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-}
-
 button {
-  flex: 1;
-  min-width: 120px;
   padding: 12px;
+  margin: 5px;
   border: none;
   border-radius: 10px;
-  cursor: pointer;
   font-size: 16px;
+  cursor: pointer;
+  width: 45%;
+}
+
+.on {
+  background: green;
+  color: white;
+}
+
+.off {
+  background: red;
+  color: white;
 }
