@@ -1,54 +1,42 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <title>Smart Farm Control</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<title>Smart Farm Control</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="container">
-  <h1>🐔 ระบบควบคุมโรงเรือน</h1>
+  <h1>🐔 Smart Farm Controller</h1>
 
   <!-- SENSOR -->
   <div class="card">
-    <h2>📊 สถานะเซ็นเซอร์</h2>
-    <div class="row">
-      <div>🌡️ อุณหภูมิ: <span id="temp">--</span> °C</div>
-      <div>💧 ความชื้น: <span id="hum">--</span> %</div>
-    </div>
+    <h2>📊 Sensor Data</h2>
+    <p>🌡️ Temp: <span id="temp">--</span> °C</p>
+    <p>💧 Humidity: <span id="hum">--</span> %</p>
+    <p>💦 Water: <span id="water">--</span> cm</p>
+    <p>🌾 Feed: <span id="feed">--</span> cm</p>
   </div>
 
-  <!-- MODE -->
+  <!-- LIGHT -->
   <div class="card">
-    <h2>⚙️ โหมดการทำงาน</h2>
-    <div class="row">
-      <button onclick="setMode('auto')" class="auto">AUTO</button>
-      <button onclick="setMode('manual')" class="manual">MANUAL</button>
-    </div>
-    <p>โหมดปัจจุบัน: <span id="mode">--</span></p>
+    <h2>💡 Light Control</h2>
+    <button class="on" onclick="setLight(1)">เปิดไฟ</button>
+    <button class="off" onclick="setLight(0)">ปิดไฟ</button>
   </div>
 
-  <!-- CONTROL -->
-  <div class="card">
-    <h2>🎮 ควบคุมอุปกรณ์</h2>
-    <div class="row">
-      <button onclick="toggleFan(1)">พัดลม ON</button>
-      <button onclick="toggleFan(0)">พัดลม OFF</button>
-    </div>
-    <div class="row">
-      <button onclick="toggleLight(1)">ไฟ ON</button>
-      <button onclick="toggleLight(0)">ไฟ OFF</button>
-    </div>
-  </div>
 </div>
 
 <script src="firebase-config.js"></script>
 <script src="script.js"></script>
+
 </body>
 </html>
