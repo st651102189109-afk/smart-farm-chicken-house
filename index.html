@@ -4,39 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Smart Farm Control</title>
+<title>Smart Farm</title>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<link rel="stylesheet" href="style.css">
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:10px;
+}
+
+.card{
+  background:#1e293b;
+  padding:15px;
+  margin:10px 0;
+  border-radius:15px;
+}
+
+button{
+  padding:12px;
+  margin:5px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  width:45%;
+}
+
+.on{background:green;color:white;}
+.off{background:red;color:white;}
+</style>
+
 </head>
 
 <body>
 
 <div class="container">
-  <h1>🐔 Smart Farm Controller</h1>
+  <h1>🐔 Smart Farm Control</h1>
 
-  <!-- SENSOR -->
   <div class="card">
-    <h2>📊 Sensor Data</h2>
-    <p>🌡️ Temp: <span id="temp">--</span> °C</p>
-    <p>💧 Humidity: <span id="hum">--</span> %</p>
-    <p>💦 Water: <span id="water">--</span> cm</p>
-    <p>🌾 Feed: <span id="feed">--</span> cm</p>
+    <h2>📊 Sensor</h2>
+    <p>🌡️ Temp: <span id="temp">--</span></p>
+    <p>💧 Hum: <span id="hum">--</span></p>
+    <p>💦 Water: <span id="water">--</span></p>
+    <p>🌾 Feed: <span id="feed">--</span></p>
   </div>
 
-  <!-- LIGHT -->
   <div class="card">
-    <h2>💡 Light Control</h2>
+    <h2>💡 Light</h2>
     <button class="on" onclick="setLight(1)">เปิดไฟ</button>
     <button class="off" onclick="setLight(0)">ปิดไฟ</button>
   </div>
 
 </div>
 
-<script src="firebase-config.js"></script>
-<script src="script.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "smartfarmfishlv1.firebaseapp.com",
+  databaseURL: "https://smartfarmfishlv1-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "smartfarmfishlv1"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// sensor
+db.ref("farm").on("value",(snap)=>{
+  const d=snap.val();
+  if(!d) return;
+
+  document.getElementById("temp").innerText=d.temp;
+  document.getElementById("hum").innerText=d.humidity;
+  document.getElementById("water").innerText=d.water;
+  document.getElementById("feed").innerText=d.feed;
+});
+
+// control
+function setLight(val){
+  db.ref("control/light").set(val);
+}
+</script>
 
 </body>
 </html>
