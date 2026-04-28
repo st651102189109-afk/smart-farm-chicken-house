@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐔 โรงเรือนไก่อัจฉริยะ</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<style>
+body { font-family: 'Kanit', sans-serif; margin:0; background:#f1f5f9; }
+header { background:#2e7d32; color:white; padding:15px; text-align:center; }
+
+.container { padding:10px; max-width:600px; margin:auto; }
+
+/* sensor row */
+.sensor-row {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+}
+.sensor {
+  flex:1;
+  background:white;
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+  box-shadow:0 2px 5px rgba(0,0,0,0.05);
+}
+.sensor span { display:block; font-size:1rem; font-weight:bold; }
+
+/* panel */
+.panel {
+  background:white;
+  padding:15px;
+  margin-top:12px;
+  border-radius:15px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* tabs */
+.tabs {
+  display:flex;
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:white;
+}
+.tabs button {
+  flex:1;
+  padding:10px;
+  border:none;
+  background:none;
+}
+.tabs button.active { color:#2e7d32; font-weight:bold; }
+
+.tab { display:none; }
+.tab.active { display:block; }
+
+/* buttons */
+.btn {
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  margin-top:10px;
+  font-size:1rem;
+}
+.btn-on { background:#4caf50; color:white; }
+.btn-off { background:#f44336; color:white; }
+
+/* light */
+.light {
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  display:inline-block;
+}
+.on { background:#4caf50; }
+.off { background:#f44336; }
+
+input { padding:8px; margin-top:5px; width:100%; }
+</style>
+</head>
+
+<body>
+
+<header>
+<h3>🐔 โรงเรือนไก่อัจฉริยะ</h3>
+</header>
+
+<div class="container">
+
+<!-- AUTO TAB -->
+<div id="auto" class="tab active">
+
+<div class="sensor-row">
+  <div class="sensor">🌡️ <span id="temp">--</span>Temp</div>
+  <div class="sensor">💧 <span id="hum">--</span>Hum</div>
+  <div class="sensor">🚰 <span id="water">--</span>Water</div>
+  <div class="sensor">🌾 <span id="feed">--</span>Feed</div>
+</div>
+
+<div class="panel">
+<h4>⏰ ตั้งเวลาไฟ</h4>
+เปิด <input type="time" id="onTime">
+ปิด <input type="time" id="offTime">
+<button class="btn btn-on" onclick="saveTime()">บันทึก</button>
+</div>
+
+</div>
+
+<!-- MANUAL TAB -->
+<div id="manual" class="tab">
+
+<div class="panel">
+<h4>💡 ควบคุมไฟ</h4>
+สถานะ: <span id="lightText">--</span> 
+<span id="lightDot" class="light off"></span>
+
+<button class="btn btn-on" onclick="setLight(true)">เปิดไฟ</button>
+<button class="btn btn-off" onclick="setLight(false)">ปิดไฟ</button>
+</div>
+
+</div>
+
+</div>
+
+<!-- bottom nav -->
+<div class="tabs">
+<button class="active" onclick="openTab('auto',this)">Auto</button>
+<button onclick="openTab('manual',this)">Manual</button>
+</div>
+
+<script>
+const firebaseConfig = {
+  databaseURL: "https://smartfarmfishlv1-default-rtdb.asia-southeast1.firebasedatabase.app/"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// realtime update
+db.ref().on("value", snap=>{
+  let d = snap.val();
+  if(!d) return;
+
+  if(d.farm){
+    temp.innerText = d.farm.temp ?? "--";
+    hum.innerText = d.farm.humidity ?? "--";
+    water.innerText = d.farm.water ?? "--";
+    feed.innerText = d.farm.feed ?? "--";
+  }
+
+  if(d.control){
+    let on = d.control.light;
+    lightText.innerText = on ? "ON" : "OFF";
+    lightDot.className = "light " + (on ? "on":"off");
+  }
+
+  if(d.auto){
+    onTime.value = d.auto.lightOn || "";
+    offTime.value = d.auto.lightOff || "";
+  }
+});
+
+// control
+function setLight(state){
+  db.ref("control/light").set(state);
+}
+
+// save auto
+function saveTime(){
+  db.ref("auto").update({
+    lightOn: onTime.value,
+    lightOff: offTime.value,
+    enabled: true
+  });
+}
+
+// tab
+function openTab(id,btn){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+}
+</script>
+
+</body>
+</html>
