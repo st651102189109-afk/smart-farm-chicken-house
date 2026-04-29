@@ -1,97 +1,39 @@
 <!DOCTYPE html>
-<html lang="th">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Farm</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Smart Farm</title>
+  <link rel="stylesheet" href="style.css">
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:white;
-}
-
-.container{
-  max-width:900px;
-  margin:auto;
-  padding:10px;
-}
-
-.card{
-  background:#1e293b;
-  padding:15px;
-  margin:10px 0;
-  border-radius:15px;
-}
-
-button{
-  padding:12px;
-  margin:5px;
-  border:none;
-  border-radius:10px;
-  width:45%;
-  font-size:16px;
-}
-
-.on{background:green;color:white;}
-.off{background:red;color:white;}
-</style>
-
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>🐔 Smart Farm</h1>
+<h2>🐔 Smart Farm Control</h2>
 
-  <div class="card">
-    <h2>📊 Sensor</h2>
-    <p>🌡️ Temp: <span id="temp">--</span></p>
-    <p>💧 Hum: <span id="hum">--</span></p>
-    <p>💦 Water: <span id="water">--</span></p>
-    <p>🌾 Feed: <span id="feed">--</span></p>
-  </div>
-
-  <div class="card">
-    <h2>💡 Light</h2>
-    <button class="on" onclick="setLight(1)">เปิดไฟ</button>
-    <button class="off" onclick="setLight(0)">ปิดไฟ</button>
-  </div>
+<div class="card">
+  <p>🌡 Temp: <span id="temp">-</span> °C</p>
+  <p>💧 Humidity: <span id="hum">-</span> %</p>
+  <p>💧 Water: <span id="water">-</span>%</p>
+  <p>🌾 Food: <span id="food">-</span>%</p>
 </div>
 
-<script>
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "smartfarmfishlv1.firebaseapp.com",
-  databaseURL: "https://smartfarmfishlv1-default-rtdb.asia-southeast1.firebasedatabase.app/",
-  projectId: "smartfarmfishlv1"
-};
+<div class="card">
+  <h3>💡 Light Control</h3>
+  <button onclick="setLight('ON')">ON</button>
+  <button onclick="setLight('OFF')">OFF</button>
+</div>
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+<div class="card">
+  <h3>⚙ Mode</h3>
+  <button onclick="setMode('AUTO')">AUTO</button>
+  <button onclick="setMode('MANUAL')">MANUAL</button>
+</div>
 
-// SENSOR
-db.ref("farm").on("value",(snap)=>{
-  const d=snap.val();
-  if(!d) return;
-
-  document.getElementById("temp").innerText=d.temp;
-  document.getElementById("hum").innerText=d.humidity;
-  document.getElementById("water").innerText=d.water;
-  document.getElementById("feed").innerText=d.feed;
-});
-
-// CONTROL
-function setLight(val){
-  db.ref("control/light").set(val);
-}
-</script>
+<script src="app.js"></script>
 
 </body>
 </html>
