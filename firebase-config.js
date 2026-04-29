@@ -1,8 +1,8 @@
 const firebaseConfig = {
-  apiKey: "FUeTzNWVD9EUpOLPkKwaAf3sSV2TvaH2qbRrc8S6",
+  apiKey: "Iewz0nqBvGXqpdNASY6aDlory3McE3CkdPjofBIT",
   authDomain: "",
-  databaseURL: "https://smartfarmfishlv1-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "smartfarmfishlv1"
+  databaseURL: "https://smartfarmchicken-798f2-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "smartfarmchicken-798f2"
 };
 
 firebase.initializeApp(firebaseConfig);
