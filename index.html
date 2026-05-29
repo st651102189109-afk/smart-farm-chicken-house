@@ -1,263 +1,394 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
 <title>Smart Chicken Farm</title>
 
-<link rel="icon" type="image/png" href="logo2.png">
-<link rel="apple-touch-icon" href="logo2.png">
+<link rel="icon"
+type="image/png"
+href="logo2.png">
 
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon"
+href="logo2.png">
+
+<meta name="mobile-web-app-capable"
+content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+content="black-translucent">
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+rel="stylesheet">
 
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
 
 :root{
-    --primary:#f59e0b;
-    --secondary:#fbbf24;
-    --bg:#fffaf0;
-    --green:#22c55e;
-    --red:#ef4444;
-    --dark:#1e293b;
+
+--primary:#f59e0b;
+--secondary:#fbbf24;
+--bg:#fffaf0;
+--green:#22c55e;
+--red:#ef4444;
+--dark:#1e293b;
+
 }
 
 *{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
+
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+
 }
 
 body{
-    margin:0;
-    font-family:'Kanit',sans-serif;
-    background:var(--bg);
-    color:var(--dark);
-    padding-bottom:100px;
+
+margin:0;
+font-family:'Kanit',sans-serif;
+background:var(--bg);
+color:var(--dark);
+padding-bottom:100px;
+
 }
 
 header{
-    background:linear-gradient(135deg,var(--primary),var(--secondary));
-    color:white;
-    padding:20px;
-    border-radius:0 0 30px 30px;
-    box-shadow:0 4px 20px rgba(0,0,0,0.15);
+
+background:linear-gradient(
+135deg,
+var(--primary),
+var(--secondary)
+);
+
+color:white;
+
+padding:20px;
+
+border-radius:0 0 30px 30px;
+
+box-shadow:0 4px 20px rgba(0,0,0,0.15);
+
 }
 
 header h2{
-    margin:0;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:1.3rem;
+
+margin:0;
+
+display:flex;
+align-items:center;
+gap:10px;
+
+font-size:1.3rem;
+
 }
 
 .status{
-    margin-top:8px;
-    font-size:0.8rem;
-    opacity:0.9;
-}
 
-.container{
-    max-width:600px;
-    margin:auto;
-    padding:15px;
-}
+margin-top:8px;
+font-size:0.8rem;
+opacity:0.9;
 
-.sensor-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-bottom:18px;
-}
-
-.sensor-card{
-    background:white;
-    border-radius:22px;
-    padding:18px;
-    text-align:center;
-    box-shadow:0 4px 15px rgba(0,0,0,0.05);
-}
-
-.sensor-card i{
-    font-size:1.5rem;
-    margin-bottom:8px;
-}
-
-.sensor-card .value{
-    font-size:1.2rem;
-    font-weight:600;
-}
-
-.sensor-card small{
-    color:#64748b;
-}
-
-.panel{
-    background:white;
-    border-radius:25px;
-    padding:20px;
-    margin-bottom:15px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.05);
-}
-
-.panel-title{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:18px;
-    font-size:1rem;
-    font-weight:500;
-    color:var(--primary);
-}
-
-.row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 0;
-    border-bottom:1px solid #f1f5f9;
-}
-
-.row:last-child{
-    border:none;
-}
-
-.switch{
-    position:relative;
-    width:46px;
-    height:25px;
-}
-
-.switch input{
-    opacity:0;
-    width:0;
-    height:0;
-}
-
-.slider{
-    position:absolute;
-    cursor:pointer;
-    top:0;
-    left:0;
-    right:0;
-    bottom:0;
-    background:#cbd5e1;
-    border-radius:30px;
-    transition:.3s;
-}
-
-.slider:before{
-    position:absolute;
-    content:"";
-    height:19px;
-    width:19px;
-    left:3px;
-    bottom:3px;
-    background:white;
-    border-radius:50%;
-    transition:.3s;
-}
-
-input:checked + .slider{
-    background:var(--primary);
-}
-
-input:checked + .slider:before{
-    transform:translateX(21px);
-}
-
-.time-input{
-    border:none;
-    background:#f8fafc;
-    padding:8px 12px;
-    border-radius:12px;
-    font-family:'Kanit';
-    outline:none;
-}
-
-.btn{
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:18px;
-    font-family:'Kanit';
-    font-size:1rem;
-    font-weight:500;
-    cursor:pointer;
-    margin-top:10px;
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-}
-
-.btn-light{
-    background:var(--primary);
-}
-
-.btn-fan{
-    background:#0ea5e9;
-}
-
-.btn-feed{
-    background:var(--green);
-}
-
-.bottom-nav{
-    position:fixed;
-    bottom:0;
-    width:100%;
-    background:white;
-    display:flex;
-    padding:12px;
-    box-shadow:0 -5px 20px rgba(0,0,0,0.06);
-}
-
-.nav-btn{
-    flex:1;
-    border:none;
-    background:none;
-    font-family:'Kanit';
-    color:#94a3b8;
-    cursor:pointer;
-}
-
-.nav-btn.active{
-    color:var(--primary);
-    font-weight:600;
-}
-
-.tab{
-    display:none;
-}
-
-.tab.active{
-    display:block;
 }
 
 .online-dot{
-    width:10px;
-    height:10px;
-    border-radius:50%;
-    background:#cbd5e1;
-    display:inline-block;
+
+width:10px;
+height:10px;
+border-radius:50%;
+background:#cbd5e1;
+display:inline-block;
+
 }
 
 .online{
-    background:var(--green);
-    box-shadow:0 0 10px var(--green);
+
+background:var(--green);
+box-shadow:0 0 10px var(--green);
+
+}
+
+.container{
+
+max-width:600px;
+margin:auto;
+padding:15px;
+
+}
+
+.sensor-grid{
+
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:12px;
+margin-bottom:18px;
+
+}
+
+.sensor-card{
+
+background:white;
+border-radius:22px;
+padding:18px;
+text-align:center;
+
+box-shadow:0 4px 15px rgba(0,0,0,0.05);
+
+}
+
+.sensor-card i{
+
+font-size:1.5rem;
+margin-bottom:8px;
+
+}
+
+.sensor-card .value{
+
+font-size:1.2rem;
+font-weight:600;
+
+}
+
+.sensor-card small{
+
+color:#64748b;
+
+}
+
+.panel{
+
+background:white;
+border-radius:25px;
+padding:20px;
+margin-bottom:15px;
+
+box-shadow:0 5px 20px rgba(0,0,0,0.05);
+
+}
+
+.panel-title{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+margin-bottom:18px;
+
+font-size:1rem;
+font-weight:500;
+
+color:var(--primary);
+
+}
+
+.row{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:12px 0;
+
+border-bottom:1px solid #f1f5f9;
+
+}
+
+.row:last-child{
+
+border:none;
+
+}
+
+.switch{
+
+position:relative;
+width:46px;
+height:25px;
+
+}
+
+.switch input{
+
+opacity:0;
+width:0;
+height:0;
+
+}
+
+.slider{
+
+position:absolute;
+
+cursor:pointer;
+
+top:0;
+left:0;
+right:0;
+bottom:0;
+
+background:#cbd5e1;
+
+border-radius:30px;
+
+transition:.3s;
+
+}
+
+.slider:before{
+
+position:absolute;
+
+content:"";
+
+height:19px;
+width:19px;
+
+left:3px;
+bottom:3px;
+
+background:white;
+
+border-radius:50%;
+
+transition:.3s;
+
+}
+
+input:checked + .slider{
+
+background:var(--primary);
+
+}
+
+input:checked + .slider:before{
+
+transform:translateX(21px);
+
+}
+
+.time-input{
+
+border:none;
+
+background:#f8fafc;
+
+padding:8px 12px;
+
+border-radius:12px;
+
+font-family:'Kanit';
+
+outline:none;
+
+}
+
+.btn{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+border-radius:18px;
+
+font-family:'Kanit';
+
+font-size:1rem;
+font-weight:500;
+
+cursor:pointer;
+
+margin-top:10px;
+
+color:white;
+
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+
+}
+
+.btn-light{
+
+background:var(--primary);
+
+}
+
+.btn-feed{
+
+background:var(--green);
+
+}
+
+.bottom-nav{
+
+position:fixed;
+
+bottom:0;
+
+width:100%;
+
+background:white;
+
+display:flex;
+
+padding:12px;
+
+box-shadow:0 -5px 20px rgba(0,0,0,0.06);
+
+}
+
+.nav-btn{
+
+flex:1;
+
+border:none;
+background:none;
+
+font-family:'Kanit';
+
+color:#94a3b8;
+
+cursor:pointer;
+
+}
+
+.nav-btn.active{
+
+color:var(--primary);
+font-weight:600;
+
+}
+
+.tab{
+
+display:none;
+
+}
+
+.tab.active{
+
+display:block;
+
 }
 
 </style>
+
 </head>
 
 <body>
@@ -265,46 +396,99 @@ input:checked + .slider:before{
 <header>
 
 <h2>
+
 <i class="fas fa-egg"></i>
+
 Smart Chicken Farm
+
 </h2>
 
 <div class="status">
-<span class="online-dot" id="dot"></span>
-<span id="status-text">Connecting...</span>
+
+<span class="online-dot"
+id="dot"></span>
+
+<span id="status-text">
+
+Connecting...
+
+</span>
+
 </div>
 
 </header>
 
 <div class="container">
 
-<!-- AUTO TAB -->
-<div id="tab-auto" class="tab active">
+<!-- AUTO -->
+
+<div id="tab-auto"
+class="tab active">
 
 <div class="sensor-grid">
 
 <div class="sensor-card">
-<i class="fas fa-temperature-high" style="color:#ef4444"></i>
-<div class="value" id="temp">--°C</div>
+
+<i class="fas fa-temperature-high"
+style="color:#ef4444"></i>
+
+<div class="value"
+id="temp">
+
+--°C
+
+</div>
+
 <small>อุณหภูมิ</small>
+
 </div>
 
 <div class="sensor-card">
-<i class="fas fa-water" style="color:#0ea5e9"></i>
-<div class="value" id="humid">--%</div>
+
+<i class="fas fa-water"
+style="color:#0ea5e9"></i>
+
+<div class="value"
+id="humid">
+
+--%
+
+</div>
+
 <small>ความชื้น</small>
+
 </div>
 
 <div class="sensor-card">
-<i class="fas fa-tint" style="color:#0284c7"></i>
-<div class="value" id="water">--%</div>
+
+<i class="fas fa-tint"
+style="color:#0284c7"></i>
+
+<div class="value"
+id="water">
+
+--%
+
+</div>
+
 <small>ระดับน้ำ</small>
+
 </div>
 
 <div class="sensor-card">
-<i class="fas fa-drumstick-bite" style="color:#f59e0b"></i>
-<div class="value" id="food">--%</div>
+
+<i class="fas fa-drumstick-bite"
+style="color:#f59e0b"></i>
+
+<div class="value"
+id="food">
+
+--%
+
+</div>
+
 <small>ระดับอาหาร</small>
+
 </div>
 
 </div>
@@ -312,61 +496,92 @@ Smart Chicken Farm
 <div class="panel">
 
 <div class="panel-title">
+
 <i class="fas fa-lightbulb"></i>
+
 ระบบไฟอัตโนมัติ
+
 </div>
 
 <div class="row">
+
 <span>AUTO MODE</span>
 
 <label class="switch">
-<input type="checkbox" id="auto-mode">
+
+<input type="checkbox"
+id="auto-mode">
+
 <span class="slider"></span>
+
 </label>
+
 </div>
 
 <div class="row">
+
 <span>เวลาเปิดไฟ</span>
-<input type="time" id="light-on" class="time-input">
+
+<input type="time"
+id="light-on"
+class="time-input">
+
 </div>
 
 <div class="row">
+
 <span>เวลาปิดไฟ</span>
-<input type="time" id="light-off" class="time-input">
+
+<input type="time"
+id="light-off"
+class="time-input">
+
 </div>
 
-<button class="btn btn-light" onclick="saveLight()">
+<button class="btn btn-light"
+onclick="saveLight()">
+
 <i class="fas fa-save"></i>
+
 บันทึกเวลา
+
 </button>
 
 </div>
 
 </div>
 
-<!-- MANUAL TAB -->
-<div id="tab-manual" class="tab">
+<!-- MANUAL -->
+
+<div id="tab-manual"
+class="tab">
 
 <div class="panel">
 
 <div class="panel-title">
+
 <i class="fas fa-sliders-h"></i>
+
 ควบคุมอุปกรณ์
+
 </div>
 
-<button class="btn btn-light" onclick="toggleLight()">
+<button class="btn btn-light"
+onclick="toggleLight()">
+
 <i class="fas fa-lightbulb"></i>
+
 เปิด / ปิดไฟ
+
 </button>
 
-<button class="btn btn-fan" onclick="toggleFan()">
-<i class="fas fa-fan"></i>
-เปิด / ปิดพัดลม
-</button>
+<button class="btn btn-feed"
+onclick="feedNow()">
 
-<button class="btn btn-feed" onclick="feedNow()">
 <i class="fas fa-drumstick-bite"></i>
+
 ให้อาหารทันที
+
 </button>
 
 </div>
@@ -377,14 +592,24 @@ Smart Chicken Farm
 
 <nav class="bottom-nav">
 
-<button class="nav-btn active" onclick="showTab('tab-auto',this)">
-<i class="fas fa-robot"></i><br>
+<button class="nav-btn active"
+onclick="showTab('tab-auto',this)">
+
+<i class="fas fa-robot"></i>
+<br>
+
 Auto
+
 </button>
 
-<button class="nav-btn" onclick="showTab('tab-manual',this)">
-<i class="fas fa-hand-pointer"></i><br>
+<button class="nav-btn"
+onclick="showTab('tab-manual',this)">
+
+<i class="fas fa-hand-pointer"></i>
+<br>
+
 Manual
+
 </button>
 
 </nav>
@@ -395,27 +620,36 @@ Manual
 
 const firebaseConfig = {
 
-databaseURL: "YOUR_FIREBASE_URL"
+databaseURL:
+"YOUR_FIREBASE_URL"
 
 };
 
 firebase.initializeApp(firebaseConfig);
 
-const db = firebase.database();
+const db =
+firebase.database();
 
 // ================= TAB =================
 
 function showTab(id,btn){
 
-document.querySelectorAll('.tab').forEach(t=>{
+document.querySelectorAll('.tab')
+.forEach(t=>{
+
 t.classList.remove('active');
+
 });
 
-document.querySelectorAll('.nav-btn').forEach(b=>{
+document.querySelectorAll('.nav-btn')
+.forEach(b=>{
+
 b.classList.remove('active');
+
 });
 
-document.getElementById(id).classList.add('active');
+document.getElementById(id)
+.classList.add('active');
 
 btn.classList.add('active');
 
@@ -423,39 +657,56 @@ btn.classList.add('active');
 
 // ================= READ DATA =================
 
-db.ref("/coop").on("value",(snap)=>{
+db.ref("/coop")
+.on("value",(snap)=>{
 
 const d = snap.val();
 
 if(!d) return;
 
 // sensor
-document.getElementById("temp").innerText =
-(d.temperature || 0) + "°C";
 
-document.getElementById("humid").innerText =
-(d.humidity || 0) + "%";
+document.getElementById("temp")
+.innerText =
+(d.temperature || 0)
++ "°C";
 
-document.getElementById("water").innerText =
-(d.waterLevel || 0) + "%";
+document.getElementById("humid")
+.innerText =
+(d.humidity || 0)
++ "%";
 
-document.getElementById("food").innerText =
-(d.foodLevel || 0) + "%";
+document.getElementById("water")
+.innerText =
+(d.waterLevel || 0)
++ "%";
+
+document.getElementById("food")
+.innerText =
+(d.foodLevel || 0)
++ "%";
 
 // status
-document.getElementById("dot").classList.add("online");
 
-document.getElementById("status-text").innerText =
+document.getElementById("dot")
+.classList.add("online");
+
+document.getElementById("status-text")
+.innerText =
 "Online";
 
 // config
-document.getElementById("auto-mode").checked =
+
+document.getElementById("auto-mode")
+.checked =
 (d.mode === "AUTO");
 
-document.getElementById("light-on").value =
+document.getElementById("light-on")
+.value =
 d.lightOn || "18:00";
 
-document.getElementById("light-off").value =
+document.getElementById("light-off")
+.value =
 d.lightOff || "06:00";
 
 });
@@ -465,11 +716,16 @@ d.lightOff || "06:00";
 function saveLight(){
 
 const mode =
-document.getElementById("auto-mode").checked
+
+document.getElementById("auto-mode")
+.checked
+
 ? "AUTO"
+
 : "MANUAL";
 
-db.ref("/coop").update({
+db.ref("/coop")
+.update({
 
 mode: mode,
 
@@ -485,15 +741,17 @@ alert("บันทึกสำเร็จ");
 
 }
 
-// ================= CONTROL =================
+// ================= LIGHT =================
 
 function toggleLight(){
 
-db.ref("/coop/lightControl").once("value",(snap)=>{
+db.ref("/coop/lightControl")
+.once("value",(snap)=>{
 
 const state = snap.val();
 
-db.ref("/coop").update({
+db.ref("/coop")
+.update({
 
 lightControl: !state
 
@@ -503,25 +761,12 @@ lightControl: !state
 
 }
 
-function toggleFan(){
-
-db.ref("/coop/fanControl").once("value",(snap)=>{
-
-const state = snap.val();
-
-db.ref("/coop").update({
-
-fanControl: !state
-
-});
-
-});
-
-}
+// ================= FEED =================
 
 function feedNow(){
 
-db.ref("/coop").update({
+db.ref("/coop")
+.update({
 
 feedNow: true
 
@@ -535,4 +780,3 @@ alert("สั่งให้อาหารแล้ว");
 
 </body>
 </html>
-```
