@@ -1,8 +1,0 @@
-{
-  "name": "Smart Farm",
-  "short_name": "Farm",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#28a745"
-}
