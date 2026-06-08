@@ -11,7 +11,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap');
         
-        /* ปรับโทนสีหลักให้เหมาะกับฟาร์มไก่ (โทนส้ม/น้ำตาล) แต่คงโครงสร้างเดิม */
         :root { 
             --primary: #d35400; 
             --secondary: #e67e22; 
@@ -54,6 +53,14 @@
         .dur-input { border: none; background: transparent; font-family: 'Kanit'; font-size: 0.9rem; color: var(--primary); width: 65px; text-align: center; outline: none; }
         .dur-input::placeholder { color: #cbd5e1; font-weight: 300; }
         .divider { margin: 0 6px; color: #cbd5e1; font-weight: 200; }
+
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; border-radius: 24px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; border-radius: 50%; transition: .4s; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--green); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         /* Status & Buttons */
         .status-light { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
@@ -111,8 +118,12 @@
 
     <div id="tab-auto" class="tab-content active">
         <div class="panel">
-            <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:var(--primary); font-weight:500; font-size:0.95rem;">
-                <span><i class="fas fa-robot"></i> ตั้งค่าระบบอัตโนมัติ</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; color:var(--primary); font-weight:500; font-size:0.95rem;">
+                <span><i class="fas fa-robot"></i> เปิดใช้งานระบบอัตโนมัติ</span>
+                <label class="switch">
+                    <input type="checkbox" id="sw-auto">
+                    <span class="slider"></span>
+                </label>
             </div>
             
             <div class="row">
@@ -172,7 +183,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // -- Helper Functions (มาจาก T11) --
+    // -- Helper Functions --
     function formatTime(input) {
         let val = input.value.replace(/\D/g, '');
         if (val.length > 4) val = val.slice(0, 4);
@@ -205,6 +216,7 @@
         navManual: document.getElementById('nav-manual'),
         tabAuto: document.getElementById('tab-auto'),
         tabManual: document.getElementById('tab-manual'),
+        swAuto: document.getElementById('sw-auto'),
         feedTime1: document.getElementById('feedTime1'),
         feedTime2: document.getElementById('feedTime2'),
         feedDurInput: document.getElementById('feedDurInput'),
@@ -215,7 +227,6 @@
         statusText: document.getElementById('status-text')
     };
 
-    let currentMode = "AUTO";
     let currentLight = "OFF";
 
     // จัดการ Event ของ Input Format
@@ -232,7 +243,12 @@
     els.feedTime2.addEventListener('change', saveSettings);
     els.feedDurInput.addEventListener('change', saveSettings);
 
-    // -- Tab / Mode Switching --
+    // สวิตช์ เปิด/ปิด Auto Mode
+    els.swAuto.addEventListener('change', (e) => {
+        set(ref(db, 'coop/autoEnabled'), e.target.checked);
+    });
+
+    // -- Tab Switching (UI Only) --
     function setTabUI(mode) {
         if(mode === "AUTO") {
             els.navAuto.classList.add('active');
@@ -247,8 +263,8 @@
         }
     }
 
-    els.navAuto.addEventListener('click', () => { set(ref(db, 'coop/mode'), "AUTO"); });
-    els.navManual.addEventListener('click', () => { set(ref(db, 'coop/mode'), "MANUAL"); });
+    els.navAuto.addEventListener('click', () => { setTabUI("AUTO"); });
+    els.navManual.addEventListener('click', () => { setTabUI("MANUAL"); });
 
     // -- Manual Controls --
     els.btnLight.addEventListener('click', () => {
@@ -279,9 +295,10 @@
             document.getElementById('w-v').innerText = data.waterLevel !== undefined ? data.waterLevel + "%" : '--';
             document.getElementById('f-v').innerText = data.foodLevel !== undefined ? data.foodLevel + "%" : '--';
 
-            // Mode
-            currentMode = data.mode || "AUTO";
-            setTabUI(currentMode);
+            // Auto Enabled Toggle Update
+            if (data.autoEnabled !== undefined) {
+                els.swAuto.checked = data.autoEnabled;
+            }
 
             // Settings Updates (ป้องกันการกระตุกขณะพิมพ์)
             if (document.activeElement !== els.feedTime1) els.feedTime1.value = data.feedTime1 || "";
