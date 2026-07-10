@@ -248,18 +248,24 @@
         set(ref(db, 'coop/autoEnabled'), e.target.checked);
     });
 
-    // -- Tab Switching (UI Only) --
+// -- Tab Switching (แก้ไขส่วนนี้) --
     function setTabUI(mode) {
         if(mode === "AUTO") {
             els.navAuto.classList.add('active');
             els.navManual.classList.remove('active');
             els.tabAuto.classList.add('active');
             els.tabManual.classList.remove('active');
+            
+            // สลับเป็น AUTO ให้ Firebase (เผื่อกรณีลืมกดสวิตช์)
+            set(ref(db, 'coop/autoEnabled'), true); 
         } else {
             els.navManual.classList.add('active');
             els.navAuto.classList.remove('active');
             els.tabManual.classList.add('active');
             els.tabAuto.classList.remove('active');
+            
+            // สลับเป็น MANUAL ให้ Firebase ทันทีที่กดเปลี่ยนหน้า
+            set(ref(db, 'coop/autoEnabled'), false);
         }
     }
 
