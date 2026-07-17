@@ -32,8 +32,8 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Sensor Grid */
-        .sensor-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
+        /* Sensor Grid - เปลี่ยนเป็น 3 คอลัมน์ */
+        .sensor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px; }
         .sensor-card { background: white; padding: 10px 4px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .sensor-card i { font-size: 1.1rem; margin-bottom: 4px; }
         .sensor-card .val { font-size: 0.9rem; font-weight: 600; display: block; margin-top: 2px;}
@@ -103,11 +103,6 @@
             <i class="fas fa-tint" style="color:#3498db"></i>
             <span class="val" id="h-v">--</span>
             <small>ความชื้น</small>
-        </div>
-        <div class="sensor-card">
-            <i class="fas fa-water" style="color:#0ea5e9"></i>
-            <span class="val" id="w-v">--</span>
-            <small>ระดับน้ำ</small>
         </div>
         <div class="sensor-card">
             <i class="fas fa-cubes" style="color:#e67e22"></i>
@@ -248,7 +243,7 @@
         set(ref(db, 'coop/autoEnabled'), e.target.checked);
     });
 
-// -- Tab Switching (แก้ไขส่วนนี้) --
+    // -- Tab Switching --
     function setTabUI(mode) {
         if(mode === "AUTO") {
             els.navAuto.classList.add('active');
@@ -256,7 +251,6 @@
             els.tabAuto.classList.add('active');
             els.tabManual.classList.remove('active');
             
-            // สลับเป็น AUTO ให้ Firebase (เผื่อกรณีลืมกดสวิตช์)
             set(ref(db, 'coop/autoEnabled'), true); 
         } else {
             els.navManual.classList.add('active');
@@ -264,7 +258,6 @@
             els.tabManual.classList.add('active');
             els.tabAuto.classList.remove('active');
             
-            // สลับเป็น MANUAL ให้ Firebase ทันทีที่กดเปลี่ยนหน้า
             set(ref(db, 'coop/autoEnabled'), false);
         }
     }
@@ -295,10 +288,9 @@
             els.dot.style.color = "var(--green)";
             els.statusText.innerText = "ออนไลน์";
 
-            // Sensors
+            // Sensors (ลบระดับน้ำออกแล้ว)
             document.getElementById('t-v').innerText = data.temperature !== undefined ? data.temperature.toFixed(1) + "°" : '--';
             document.getElementById('h-v').innerText = data.humidity !== undefined ? data.humidity.toFixed(0) + "%" : '--';
-            document.getElementById('w-v').innerText = data.waterLevel !== undefined ? data.waterLevel + "%" : '--';
             document.getElementById('f-v').innerText = data.foodLevel !== undefined ? data.foodLevel + "%" : '--';
 
             // Auto Enabled Toggle Update
@@ -306,7 +298,7 @@
                 els.swAuto.checked = data.autoEnabled;
             }
 
-            // Settings Updates (ป้องกันการกระตุกขณะพิมพ์)
+            // Settings Updates
             if (document.activeElement !== els.feedTime1) els.feedTime1.value = data.feedTime1 || "";
             if (document.activeElement !== els.feedTime2) els.feedTime2.value = data.feedTime2 || "";
             if (document.activeElement !== els.feedDurInput) els.feedDurInput.value = secondsToMMSS(data.feedDuration || 5);
