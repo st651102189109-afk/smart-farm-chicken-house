@@ -38,7 +38,7 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Sensor Grid - เปลี่ยนเป็น 3 คอลัมน์ */
+        /* Sensor Grid */
         .sensor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 15px; }
         .sensor-card { background: white; padding: 10px 4px; border-radius: 12px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .sensor-card i { font-size: 1.1rem; margin-bottom: 4px; }
@@ -118,6 +118,7 @@
     </div>
 
     <div id="tab-auto" class="tab-content active">
+        <!-- ตั้งเวลาให้อาหาร -->
         <div class="panel">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; color:var(--primary); font-weight:500; font-size:0.95rem;">
                 <span><i class="fas fa-robot"></i> เปิดใช้งานระบบอัตโนมัติ</span>
@@ -145,6 +146,27 @@
                 <span style="font-size:0.85rem;"><i class="fas fa-hourglass-half" style="color:var(--primary)"></i> ระยะเวลาปล่อยอาหาร</span>
                 <div class="input-group">
                     <input type="text" id="feedDurInput" class="dur-input" placeholder="mm:ss" inputmode="tel" style="width: 80px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- ตั้งเวลาส่องสว่าง (ส่วนที่เพิ่มใหม่) -->
+        <div class="panel" style="border-left-color: #f1c40f;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; color:#f39c12; font-weight:500; font-size:0.95rem;">
+                <span><i class="fas fa-lightbulb"></i> ตั้งเวลาไฟส่องสว่าง (Auto)</span>
+            </div>
+            
+            <div class="row">
+                <span style="font-size:0.85rem;"><i class="fas fa-sun" style="color:#e67e22"></i> เวลาเปิดไฟ</span>
+                <div class="input-group">
+                    <input type="time" id="lightOnTime" required>
+                </div>
+            </div>
+            
+            <div class="row" style="border:none;">
+                <span style="font-size:0.85rem;"><i class="fas fa-moon" style="color:#34495e"></i> เวลาปิดไฟ</span>
+                <div class="input-group">
+                    <input type="time" id="lightOffTime" required>
                 </div>
             </div>
         </div>
@@ -221,6 +243,9 @@
         feedTime1: document.getElementById('feedTime1'),
         feedTime2: document.getElementById('feedTime2'),
         feedDurInput: document.getElementById('feedDurInput'),
+        // อ้างอิง DOM Elements ของการตั้งเวลาไฟ
+        lightOnTime: document.getElementById('lightOnTime'),
+        lightOffTime: document.getElementById('lightOffTime'),
         btnLight: document.getElementById('btn-light'),
         lightStatus: document.getElementById('light-status'),
         btnFeed: document.getElementById('btn-feed'),
@@ -243,6 +268,10 @@
     els.feedTime1.addEventListener('change', saveSettings);
     els.feedTime2.addEventListener('change', saveSettings);
     els.feedDurInput.addEventListener('change', saveSettings);
+
+    // ส่งค่าขึ้น Firebase สำหรับเวลาเปิด-ปิดไฟ
+    els.lightOnTime.addEventListener('change', (e) => set(ref(db, 'coop/lightOnTime'), e.target.value));
+    els.lightOffTime.addEventListener('change', (e) => set(ref(db, 'coop/lightOffTime'), e.target.value));
 
     // สวิตช์ เปิด/ปิด Auto Mode
     els.swAuto.addEventListener('change', (e) => {
@@ -294,7 +323,7 @@
             els.dot.style.color = "var(--green)";
             els.statusText.innerText = "ออนไลน์";
 
-            // Sensors (ลบระดับน้ำออกแล้ว)
+            // Sensors 
             document.getElementById('t-v').innerText = data.temperature !== undefined ? data.temperature.toFixed(1) + "°" : '--';
             document.getElementById('h-v').innerText = data.humidity !== undefined ? data.humidity.toFixed(0) + "%" : '--';
             document.getElementById('f-v').innerText = data.foodLevel !== undefined ? data.foodLevel + "%" : '--';
@@ -304,10 +333,14 @@
                 els.swAuto.checked = data.autoEnabled;
             }
 
-            // Settings Updates
+            // Settings Updates (ดึงค่าเวลาปัจจุบันจาก Firebase มาโชว์)
             if (document.activeElement !== els.feedTime1) els.feedTime1.value = data.feedTime1 || "";
             if (document.activeElement !== els.feedTime2) els.feedTime2.value = data.feedTime2 || "";
             if (document.activeElement !== els.feedDurInput) els.feedDurInput.value = secondsToMMSS(data.feedDuration || 5);
+
+            // อัปเดตเวลาไฟส่องสว่าง (Auto) บนหน้าเว็บ
+            if (document.activeElement !== els.lightOnTime) els.lightOnTime.value = data.lightOnTime || "18:00";
+            if (document.activeElement !== els.lightOffTime) els.lightOffTime.value = data.lightOffTime || "06:00";
 
             // Light Status Update
             currentLight = data.light || "OFF";
